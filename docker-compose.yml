@@ -1,0 +1,15 @@
+version: '2'
+services:
+  elasticsearch:
+    image: elasticsearch:latest
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  kibana:
+    image: kibana:latest
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
