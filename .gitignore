@@ -1,4 +1,5 @@
 data/
 backup/
-*.txt
+todo.txt
+*.pyc
 

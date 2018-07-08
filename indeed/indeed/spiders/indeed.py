@@ -35,12 +35,21 @@ class IndeedSpider(scrapy.Spider):
     upon loading the spider.
     """
     name  = "IndeedSpider"
-    # -- Define indeed search terms.
-    query = urlencode({"q": input("Search query:\n"), "l": input("Location:\n")})
-    url   = "https://www.indeed{}/jobs?".format(input("Domain (.e.g, '.com'):\n")) + query
-    # -- Init elasticsearch client and define output index.
-    es    = Elasticsearch()
-    index = input("Elasticsearch index:\n")
+
+    def __init__(self, **kwargs):
+        """"""
+        # -- Set kwargs.
+        super().__init__(**kwargs)
+        # -- If the keyword args are not passed get from user input.
+        for attr in ["query", "location", "domain", "index"]:
+            if not hasattr(self, attr):
+                setattr(self, attr, input("{}:\n".format(attr.title())))
+        # -- Define indeed search terms.
+        query = urlencode({"q": self.query, "l": self.location})
+        self.url = "https://www.indeed{}/jobs?".format(self.domain) + query
+        logging.info(self.url)
+        # -- Init elasticsearch client and define output index.
+        self.es = Elasticsearch()
 
     def start_requests(self):
         """Yield the initial request as defined by user input.
