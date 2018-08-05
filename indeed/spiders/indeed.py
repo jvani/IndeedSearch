@@ -84,8 +84,13 @@ def parse_response(response):
             if extracted:
                 job[key] = extracted
                 break
+    
+    # -- Easily apply bool.
+    button1 = any(response.xpath("//*[contains(@class, 'indeed-apply-button')]"))
+    button2 = any(response.xpath("//*[contains(@class, 'IndeedApplyButton')]"))
+    job["EasyApply"] = button1 or button2
 
-    job["EasyApply"] = any(response.xpath("//*[contains(@class, 'indeed-apply-button')]"))
+    # -- Crawl info.
     job["LastCrawlDate"] = dt.datetime.isoformat(dt.datetime.utcnow())
     job["Source"] = response.url
 

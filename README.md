@@ -1,12 +1,9 @@
 # IndeedSearch
-
 Collect data from indeed and add to elasticsearch.
 
 ## Use:
 ### Start elasticsearch and kibana.
 `docker-compose up -d`
 
-### Start spider.
-`cd indeed/`
+<a href="http://localhost:5000">http://localhost:5000</a>
 
-`scrapy crawl IndeedSpider`

@@ -15,7 +15,7 @@ class CrawlForm(Form):
     query = TextField(
         "Query:", 
         validators=[validators.DataRequired()],
-        description="Data Scientist"
+        description="Scientist"
     )
     location = TextField(
         "Location:", 
@@ -42,12 +42,9 @@ def home():
     
     if request.method == "POST":
         try:
-            print(request.form.to_dict())
             # -- Init spider with form data.
             crawler = CrawlerWorker(IndeedSpider, request.form.to_dict())
-            print("Init crawler")
             crawler.start()
-            print("Started crawler")
         # -- Update running_spider var based on try success.
         except Exception as ee:
             raise ee

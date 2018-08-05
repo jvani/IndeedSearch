@@ -6,11 +6,11 @@
     
     {% if running_spider == True %}
     <div class="alert alert-success">
-        <strong>Success!</strong> Indicates a successful or positive action.
+        <strong>Success!</strong> The crawl started without error.
     </div>
     {% elif running_spider == False %}
     <div class="alert alert-danger">
-        <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+        <strong>Failure!</strong> Unable to start crawl without error.
     </div>
     {% endif %}
 
