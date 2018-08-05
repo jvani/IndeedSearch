@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import scrapy
 import logging
 import datetime as dt
@@ -6,27 +7,89 @@ from urllib.parse import urlencode
 from elasticsearch import Elasticsearch
 
 
-class JobPosting(object):
-    def __init__(self, response):
-        """Indeed job posting parsing object.
-        Args:
-            response (Reponse) - scrapy response object.
-        """
-        # -- Simple xpaths.
-        xpaths = {
-            "Title": "//*[@class='jobtitle']//text()",
-            "Company": "//*[@class='company']//text()",
-            "Location": "//*[@class='location']//text()",
-            "Date": "//*[@class='date']//text()",
-            "Pay": "//div[@data-tn-component='jobHeader']/div/span[@class='no-wrap']/text()"
+class Job(scrapy.Item):
+    """"""
+    # -- Job details.
+    Title = scrapy.Field(serializer=str)
+    Company = scrapy.Field(serializer=str)
+    Location = scrapy.Field(serializer=str)
+    Date = scrapy.Field(serializer=str)
+    Pay = scrapy.Field(serializer=str)
+    Description = scrapy.Field(serializer=str)
+    EasyApply = scrapy.Field(serializer=str)
+    # -- Crawl details.
+    LastCrawlDate = scrapy.Field(serializer=str)
+    Source = scrapy.Field(serializer=str)
+
+
+def parse_response(response):
+    """"""
+    job = Job()
+
+    xpaths = {
+        "Title": {
+            "join": False,
+            "xpath": [
+                "//*[@class='jobtitle']//text()",
+                "//*[contains(@class, 'JobInfoHeader-title')]/text()"
+            ]
+        },
+        "Company": {
+            "join": False,
+            "xpath": [
+                "//*[@class='company']//text()",
+                "//*[contains(@class, 'InlineCompanyRating')]/div[1]/text()"
+            ]
+        },
+        "Location": {
+            "join": False,
+            "xpath": [
+                "//*[@class='location']//text()",
+                "//*[contains(@class, 'InlineCompanyRating')]/div[4]/text()"
+            ]
+        },
+        "Date": {
+            "join": False,
+            "xpath": [
+                "//*[@class='date']//text()",
+            ]
+        },
+        "Pay": {
+            "join": False,
+            "xpath": [
+                "//div[@data-tn-component='jobHeader']/div/span[@class='no-wrap']/text()",
+            ]
+        },
+        "Description": {
+            "join": True,
+            "xpath": [
+                "//*[@class='summary']//text()",
+                "//*[contains(@class, 'JobComponent-description')]//text()"
+            ]
         }
-        # -- Create data dictionary from simple xpaths.
-        self.data = {kk: response.xpath(vv).extract_first("").strip() for kk, vv in xpaths.items()}
-        # -- Populate remaining fields.
-        self.data["LastCrawlDate"] = dt.datetime.isoformat(dt.datetime.utcnow())
-        self.data["Description"] = "\n".join(response.xpath("//*[@class='summary']//text()").extract())
-        self.data["EasyApply"] = any(response.xpath("//*[contains(@class, 'indeed-apply-button')]"))
-        self.data["Source"] = response.url
+    }
+
+    # -- For all mapped xpaths.
+    for key, vals in xpaths.items():
+        job.setdefault(key, "")
+        # -- Try a the xpaths in order.
+        for xpath in vals["xpath"]:
+            # -- If join flag is true, extract all, and join.
+            if vals["join"]:
+                extracted = "\n".join(response.xpath(xpath).extract())
+            # -- Else extract first.
+            else:
+                extracted = response.xpath(xpath).extract_first()
+            # -- If a value was extract, set, and break looping of xpaths.
+            if extracted:
+                job[key] = extracted
+                break
+
+    job["EasyApply"] = any(response.xpath("//*[contains(@class, 'indeed-apply-button')]"))
+    job["LastCrawlDate"] = dt.datetime.isoformat(dt.datetime.utcnow())
+    job["Source"] = response.url
+
+    return job
 
 
 class IndeedSpider(scrapy.Spider):
@@ -51,10 +114,12 @@ class IndeedSpider(scrapy.Spider):
         # -- Init elasticsearch client and define output index.
         self.es = Elasticsearch()
 
+
     def start_requests(self):
         """Yield the initial request as defined by user input.
         """
         yield scrapy.Request(self.url, callback=self.indeed_init)
+
 
     def indeed_init(self, response):
         """Paginate results, up to 100 pages (max returned by indeed), for the 
@@ -77,6 +142,7 @@ class IndeedSpider(scrapy.Spider):
                 callback=self.search_results
             )
 
+
     def search_results(self, response):
         """Extract ad links from search results and yield requests for each job.
         """
@@ -84,14 +150,13 @@ class IndeedSpider(scrapy.Spider):
         for link in [response.urljoin(link) for link in links]:
             yield scrapy.Request(link, callback=self.parse)
 
+
     def parse(self, response):
         """Parse the job posting and input data into elasticsearch.
         """
-        job = JobPosting(response)
-        self.es.index(
-            index=self.index, 
-            doc_type="job", 
-            id=job.data["Company"] + "-" + job.data["Title"], 
-            body=job.data
-        )
+        job = dict(parse_response(response))
+        idx = job["Company"] + "-" + job["Title"]
+        # -- Check if the document exists before inserting it.
+        if not self.es.exists(index=self.index, doc_type="job", id=idx):
+            self.es.index(index=self.index, doc_type="job", id=idx, body=job)
         
