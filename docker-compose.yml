@@ -2,14 +2,26 @@ version: '2'
 services:
   elasticsearch:
     image: elasticsearch:latest
-    container_name: elasticsearch
+    container_name: indeedelasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
   kibana:
     image: kibana:latest
-    container_name: kibana
+    container_name: indeedkibana
     depends_on:
       - elasticsearch
     ports:
       - "5601:5601"
+  web:
+    build: 
+      context: .
+      dockerfile: web/Dockerfile
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONPATH=/app
+    links:
+      - elasticsearch

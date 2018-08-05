@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from scrapy import signals
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import CrawlerProcess, CrawlerRunner
 from scrapy.xlib.pydispatch import dispatcher
 import multiprocessing
 
@@ -14,12 +14,12 @@ class CrawlerWorker(multiprocessing.Process):
         self.spider_kwargs = spider_kwargs
 
         self.process = CrawlerProcess()
-        self.items = []
-        dispatcher.connect(self._item_passed, signals.item_passed)
+#        self.items = []
+#        dispatcher.connect(self._item_passed, signals.item_passed)
 
 
-    def _item_passed(self, item):
-        self.items.append(item)
+#    def _item_passed(self, item):
+#        self.items.append(item)
 
 
     def run(self):

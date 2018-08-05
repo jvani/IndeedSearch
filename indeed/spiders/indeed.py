@@ -112,7 +112,7 @@ class IndeedSpider(scrapy.Spider):
         self.url = "https://www.indeed{}/jobs?".format(self.domain) + query
         logging.info(self.url)
         # -- Init elasticsearch client and define output index.
-        self.es = Elasticsearch()
+        self.es = Elasticsearch("elasticsearch:9200")
 
 
     def start_requests(self):

@@ -1,0 +1,5 @@
+flask
+scrapy
+WTForms
+elasticsearch
+flask-bootstrap

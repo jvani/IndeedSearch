@@ -2,9 +2,6 @@
 import logging
 from crawler_worker import *
 from indeed.spiders.indeed import *
-from twisted.internet import reactor
-from scrapy.crawler import CrawlerRunner
-from scrapy.utils.project import get_project_settings
 from flask_bootstrap import Bootstrap
 from flask import Flask, request, render_template, send_from_directory
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
@@ -17,22 +14,22 @@ Bootstrap(app)
 class CrawlForm(Form):
     query = TextField(
         "Query:", 
-        validators=[validators.required()],
+        validators=[validators.DataRequired()],
         description="Data Scientist"
     )
     location = TextField(
         "Location:", 
-        validators=[validators.required()],
+        validators=[validators.DataRequired()],
         description="Seattle"
     )
     domain = TextField(
         "Domain:", 
-        validators=[validators.required()],
+        validators=[validators.DataRequired()],
         description=".com"
     )
     index = TextField(
         "Elasticsearch Index:", 
-        validators=[validators.required()],
+        validators=[validators.DataRequired()],
         description="indeed"
     )
 
@@ -45,12 +42,15 @@ def home():
     
     if request.method == "POST":
         try:
-
+            print(request.form.to_dict())
             # -- Init spider with form data.
             crawler = CrawlerWorker(IndeedSpider, request.form.to_dict())
+            print("Init crawler")
             crawler.start()
+            print("Started crawler")
         # -- Update running_spider var based on try success.
-        except:
+        except Exception as ee:
+            raise ee
             running_spider = False
         else:
             running_spider = True
@@ -59,5 +59,5 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")
 
