@@ -1,0 +1,19 @@
+[
+  {
+    "_id": "AWRf8JMLFi6JeAKSVJzu",
+    "_type": "dashboard",
+    "_source": {
+      "title": "indeed",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"AWRf66VAFi6JeAKSVJzs\",\"panelIndex\":2,\"row\":4,\"size_x\":6,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"AWRl1PbcFi6JeAKSVJ0h\",\"panelIndex\":6,\"row\":1,\"size_x\":3,\"size_y\":3,\"type\":\"visualization\"},{\"col\":4,\"id\":\"AWRl2QwjFi6JeAKSVJ0o\",\"panelIndex\":7,\"row\":1,\"size_x\":3,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"Company\",\"Title\",\"Source\"],\"id\":\"AWRmyduhFi6JeAKSVJ0w\",\"panelIndex\":9,\"row\":10,\"size_x\":12,\"size_y\":8,\"sort\":[\"LastCrawlDate\",\"desc\"],\"type\":\"search\"},{\"col\":7,\"id\":\"AWRf8CWkFi6JeAKSVJzt\",\"panelIndex\":10,\"row\":1,\"size_x\":6,\"size_y\":9,\"type\":\"visualization\"}]",
+      "optionsJSON": "{\"darkTheme\":false}",
+      "uiStateJSON": "{\"P-10\":{\"vis\":{\"legendOpen\":false}},\"P-2\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"legendOpen\":false}},\"P-5\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-6\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-7\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}}}}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"match_all\":{}}}],\"highlightAll\":true,\"version\":true}"
+      }
+    }
+  }
+]

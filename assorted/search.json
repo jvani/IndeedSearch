@@ -1,0 +1,25 @@
+[
+  {
+    "_id": "AWRmyduhFi6JeAKSVJ0w",
+    "_type": "search",
+    "_source": {
+      "title": "indeed-simple-search",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "Company",
+        "Title",
+        "Location",
+        "Source"
+      ],
+      "sort": [
+        "LastCrawlDate",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"AWRZNpD6Fi6JeAKSVJzR\",\"highlightAll\":true,\"version\":true,\"query\":{\"match_all\":{}},\"filter\":[]}"
+      }
+    }
+  }
+]
